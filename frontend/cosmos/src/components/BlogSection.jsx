@@ -1,6 +1,8 @@
+
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPublicBlogPosts } from "../redux/slices/createblogSlice"; 
+import { Link } from "react-router-dom";
 
 export default function BlogSection() {
   const dispatch = useDispatch();
@@ -53,7 +55,10 @@ export default function BlogSection() {
         {publicStatus === "succeeded" && publicBlogs.length > 0 && (
           <div className="grid md:grid-cols-2 gap-8">
             {publicBlogs.map((post) => (
-              <article key={post.id} className="glass-effect rounded-2xl overflow-hidden hover:scale-105 transition-transform duration-300 border border-white/20">
+              <article 
+                key={post.id} 
+                className="glass-effect rounded-2xl overflow-hidden hover:scale-105 transition-transform duration-300 border border-white/20"
+              >
                 <img 
                   src={post.cover_image} 
                   alt={post.alt || "Blog post image"} 
@@ -66,14 +71,17 @@ export default function BlogSection() {
                   <h3 className="font-orbitron text-xl font-bold mb-3 text-glow">
                     {post.title}
                   </h3>
-                  <p className="text-gray-300 mb-4">
+                  <p className="text-gray-300 mb-4 line-clamp-3">
                     {post.excerpt}
                   </p>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-400">{post.readTime || "N/A"}</span>
-                    <button className="text-stellar-gold hover:text-aurora-green transition-colors duration-300 font-medium">
+                    <Link
+                      to={`/blog/${post.id}`}
+                      className="text-stellar-gold hover:text-aurora-green transition-colors duration-300 font-medium"
+                    >
                       Read More
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </article>
@@ -82,10 +90,13 @@ export default function BlogSection() {
         )}
 
         <div className="text-center mt-12">
-          <button className="px-8 py-4 glass-effect border-2 border-aurora-green text-aurora-green font-bold rounded-full hover:bg-aurora-green hover:text-space-dark transition-all duration-300">
+          <Link 
+            to="/blog" 
+            className="px-8 py-4 glass-effect border-2 border-aurora-green text-aurora-green font-bold rounded-full hover:bg-aurora-green hover:text-space-dark transition-all duration-300"
+          >
             <i className="fas fa-book-open mr-2"></i>
             Explore All Articles
-          </button>
+          </Link>
         </div>
       </div>
     </section>

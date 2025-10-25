@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navigation from "../components/Navigation";
 import Footer from "../components/Footer";
@@ -11,6 +12,26 @@ export default function NewsPage() {
   const [error, setError] = useState(null);
   const articlesPerPage = 6;
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state?.scrollTo) {
+      const sectionId = location.state.scrollTo;
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const headerOffset = 80;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+      } else {
+        // If the section doesn't exist on this page (e.g., blog, explore), redirect to home
+        navigate("/", { state: { scrollTo: sectionId } });
+      }
+    }
+  }, [location, navigate]);
+
+  // ✅ Fetch news articles
   useEffect(() => {
     axios
       .get("https://api.spaceflightnewsapi.net/v4/articles/?limit=30")
@@ -42,6 +63,7 @@ export default function NewsPage() {
       });
   }, []);
 
+  // ✅ Category logic
   const categories = [
     { value: "all", label: "All News" },
     ...Array.from(new Set(allNewsArticles.map((a) => a.category))).map((cat) => ({
@@ -82,7 +104,6 @@ export default function NewsPage() {
     }
   };
 
-  
   const generatePagination = (totalPages, currentPage) => {
     const pages = [];
     if (totalPages <= 4) {
@@ -100,24 +121,25 @@ export default function NewsPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-space-dark text-white">
       <Navigation />
 
-      <section className="pt-20 pb-16 cosmic-gradient star-field relative">
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="font-orbitron text-4xl md:text-6xl font-bold mb-6 text-glow">
-              <i className="fas fa-newspaper mr-4 text-stellar-gold"></i>
-              Space News Center
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 leading-relaxed">
-              Stay informed with the latest discoveries, missions, and breakthroughs in space exploration from across the cosmos.
-            </p>
-          </div>
+      {/* === Page Header === */}
+      <section className="pt-24 pb-16 cosmic-gradient star-field relative">
+        <div className="container mx-auto px-6 relative z-10 text-center">
+          <h1 className="font-orbitron text-4xl md:text-6xl font-bold mb-6 text-glow">
+            <i className="fas fa-newspaper mr-4 text-stellar-gold"></i>
+            Space News Center
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-300 leading-relaxed max-w-3xl mx-auto">
+            Stay informed with the latest discoveries, missions, and breakthroughs in space exploration
+            from across the cosmos.
+          </p>
         </div>
       </section>
 
-      <section className="py-16 bg-gradient-to-b from-space-dark to-space-blue relative">
+      {/* === News Section === */}
+      <section id="news" className="py-16 bg-gradient-to-b from-space-dark to-space-blue relative">
         <div className="container mx-auto px-6 relative z-10">
           {error && (
             <div className="text-center text-red-400 text-lg mb-8">
@@ -130,7 +152,7 @@ export default function NewsPage() {
             <p className="text-center text-white text-lg">Loading news...</p>
           ) : (
             <>
-              {/* Category Filter */}
+              {/* === Category Filter === */}
               <div className="mb-12">
                 <h3 className="font-orbitron text-xl font-bold mb-6 text-center">Filter by Category</h3>
                 <div className="flex flex-wrap justify-center gap-3">
@@ -150,7 +172,7 @@ export default function NewsPage() {
                 </div>
               </div>
 
-              {/* News Grid */}
+              {/* === News Grid === */}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 {currentArticles.map((article) => (
                   <article
@@ -183,7 +205,7 @@ export default function NewsPage() {
                 ))}
               </div>
 
-              {/* Pagination */}
+              {/* === Pagination === */}
               {totalPages > 1 && (
                 <div className="flex justify-center items-center space-x-2">
                   <button
@@ -229,7 +251,7 @@ export default function NewsPage() {
                 </div>
               )}
 
-              {/* Info */}
+              {/* === Info Text === */}
               <div className="text-center mt-8">
                 <p className="text-gray-400">
                   Showing {startIndex + 1}-{Math.min(startIndex + articlesPerPage, filteredArticles.length)} of{" "}

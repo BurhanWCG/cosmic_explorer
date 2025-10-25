@@ -214,7 +214,6 @@ export default function CreateBlogPage() {
                     <p className="text-xs text-gray-400 mt-2">Separate tags with commas</p>
                   </div>
                   <div>
-                    <h1>https://images.unsplash.com/photo-1630694093867-4b947d812bf0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400</h1>
                   </div>
 
                   {/* Cover Image */}
@@ -240,7 +239,7 @@ export default function CreateBlogPage() {
                       <button
                         type="submit"
                         disabled={isSaving}
-                        className="w-full bg-gradient-to-r from-stellar-gold to-aurora-green text-space-dark font-bold py-3 rounded-xl hover:from-aurora-green hover:to-stellar-gold transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-white/50 text-space-dark font-bold py-3 rounded-xl hover:from-aurora-green hover:to-stellar-gold transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isSaving ? (
                           <>

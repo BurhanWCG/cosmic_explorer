@@ -7,6 +7,12 @@ class PublicBlogPostListAPIView(generics.ListAPIView):
     serializer_class = BlogPostSerializer
     permission_classes = [permissions.AllowAny] 
 
+    
+class PublicBlogPostDetailAPIView(generics.RetrieveAPIView):
+    queryset = BlogPost.objects.all()
+    serializer_class = BlogPostSerializer
+    permission_classes = [permissions.AllowAny]
+
 class UserBlogPostListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = BlogPostSerializer
     permission_classes = [permissions.IsAuthenticated]
