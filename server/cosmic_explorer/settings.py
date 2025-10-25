@@ -1,32 +1,34 @@
-"""
-Django settings for cosmos_explorer project.
-Production-ready configuration.
-"""
-
 from pathlib import Path
-import os
 from dotenv import load_dotenv
-import dj_database_url
+import os
 from datetime import timedelta
 
-# Load .env for local development
+# Load environment variables
 load_dotenv()
 
-# Base directory
+# Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Security
-SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')  # fallback for local dev
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# SECURITY
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG') == 'True'
 
-# CORS settings
-CORS_ALLOWED_ORIGINS = os.getenv(
-    'CORS_ALLOWED_ORIGINS', 'http://localhost:5173,http://localhost:5174'
-).split(',')
-CORS_ALLOW_HEADERS = ['authorization', 'content-type']
+# CORS and allowed hosts
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5175",
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:5176"
+]
+ALLOWED_HOSTS = ['*']  # Update for production
+AUTH_USER_MODEL = 'user.CustomUser'
 
-# Installed apps
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
+]
+
+# Application definition
 INSTALLED_APPS = [
     'blog',
     'user',
@@ -41,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-# Middleware
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,9 +55,21 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# URLs
+# REST framework config
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+# JWT settings
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+# URL configuration
 ROOT_URLCONF = 'cosmic_explorer.urls'
-WSGI_APPLICATION = 'cosmic_explorer.wsgi.application'
 
 # Templates
 TEMPLATES = [
@@ -74,36 +87,35 @@ TEMPLATES = [
     },
 ]
 
+# WSGI
+WSGI_APPLICATION = 'cosmic_explorer.wsgi.application'
+
 # Database
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv(
-            'DATABASE_URL',
-            f"postgresql://{os.getenv('DB_USER','cosmic_user')}:{os.getenv('DB_PASSWORD','password')}@{os.getenv('DB_HOST','localhost')}:{os.getenv('DB_PORT','5432')}/{os.getenv('DB_NAME','cosmic_explorer_db')}"
-        )
-    )
-}
-
-# Authentication
-AUTH_USER_MODEL = 'user.CustomUser'
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
-}
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+    }
 }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
 ]
 
 # Internationalization
@@ -115,7 +127,6 @@ USE_TZ = True
 # Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

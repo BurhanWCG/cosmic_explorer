@@ -9,7 +9,7 @@ export default function Profile() {
     const user = useSelector((state) => state.auth.user);
 
     const [isEditingProfile, setIsEditingProfile] = useState(false);
-    const [activeTab, setActiveTab] = useState('overview');
+    const [activeTab, setActiveTab] = useState('posts');
 
     const [isEditingPost, setIsEditingPost] = useState(false);
     const [editingPost, setEditingPost] = useState(null);
@@ -21,9 +21,11 @@ export default function Profile() {
         email: '',
     });
 
-    useEffect(() => {
+useEffect(() => {
+    if (user?.token) { 
         dispatch(fetchBlogPosts());
-    }, [dispatch]);
+    }
+}, [dispatch, user?.token]);
 
     useEffect(() => {
         if (user) {
